@@ -8,6 +8,7 @@ export const rn = async (filePath, newName) => {
 
 
     fs.rename(resPath, newPath, (err) => {
-        if (err) throw err;
+        if (err) return err;
+        return `File ${filePath} renamed to ${newName}!`
     });
 }

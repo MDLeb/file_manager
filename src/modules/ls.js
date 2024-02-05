@@ -2,14 +2,12 @@ import state from "../state.js";
 import fs from "node:fs";
 
 export const ls = async () => {
-    fs.readdir(state.SELECTED_DIR, {withFileTypes: true},  (error, files) => {
+    fs.readdir(state.SELECTED_DIR, {withFileTypes: true}, (error, files) => {
         let resFiles = files.map(i => {
             return {'Name': i.name, 'Type': i.isFile() ? 'file' : 'directory'}
         }).sort(sortFn)
-        console.table(resFiles)
-        if (error) {
-            console.error(`${error}`)
-        }
+        if (error) return error;
+        return resFiles;
     })
 }
 

@@ -6,7 +6,8 @@ export const rm = async (filePath) => {
     const resPath = path.resolve(state.SELECTED_DIR, filePath);
 
     fs.rm(resPath, {recursive: true}, (err) => {
-        if (err) throw err;
+        if (err) return err;
+        return `File ${filePath} removed!`
     });
 
 }

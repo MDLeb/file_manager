@@ -1,22 +1,22 @@
 import state from "../state.js";
 import fs from "node:fs";
 import path from "node:path";
+import {finished} from 'node:stream/promises';
 
 export const cat = async (filePath) => {
     const resPath = path.resolve(state.SELECTED_DIR, filePath);
+
+    //FIXME handle error if path to directory
     const readable = fs.createReadStream(resPath, {encoding: 'utf-8'});
 
+    let data = '';
     readable.on('data', (chunk) => {
-        console.log(chunk);
+        data += chunk;
     });
 
-    await new Promise((resolve, reject) => {
-        readable.on('end', () => {
-            resolve();
-        });
-
-        readable.on('error', (error) => {
-            reject(error);
-        });
+    readable.on('error', (error) => {
+        return (error.message);
     });
+    await finished(readable);
+    return (data);
 }

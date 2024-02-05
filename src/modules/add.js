@@ -5,7 +5,11 @@ import path from "node:path";
 export const add = async (filePath) => {
     const resPath = path.resolve(state.SELECTED_DIR, filePath);
 
-    await fs.open(resPath, 'a', (err, fd) => {
-        // => null, <fd>
-    });
+    return new Promise((res, rej) => {
+        fs.open(resPath, 'ax', (err) => {
+            if (err) rej(err);
+            res(`File ${resPath} added successfully`);
+        });
+    })
+
 }

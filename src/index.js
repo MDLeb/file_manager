@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import {stdin, stdout} from 'node:process';
 import {getMessage} from "./utils/getMessage.js";
 import {getDirname} from "./utils/getDirname.js";
+import {isString} from "./utils/isString.js";
+import {isArray} from "./utils/isArray.js";
+import {errorHandler} from "./utils/errorHandler.js";
 
 const startManager = async () => {
     const rl = readline.createInterface({input: stdin, output: stdout});
@@ -23,15 +26,25 @@ const startManager = async () => {
                 if (!err) {
                     import(`file://${modulePath}`)
                         .then(async (module) => {
-                            await module[cmd](...args);
-                            rl.setPrompt(getMessage('directory'));
+                            try {
+                                let result = await module[cmd](...args);
+
+                                result && isArray(result) && console.table(result);
+                                result && isString(result) && console.log(result);
+
+                                rl.setPrompt(getMessage('directory'));
+                            } catch (error) {
+                                rl.setPrompt(getMessage('error', errorHandler(error)) + getMessage('directory'));
+                            }
                             rl.prompt();
                         })
-                        .catch((error) => {
-                            console.error(`Invalid input 1: ${error}`);
-                        });
+                    // .catch((error) => {
+                    //     rl.setPrompt(getMessage('error', errorHandler(error)), getMessage('directory'));
+                    //     rl.prompt();
+                    // });
                 } else {
-                    console.error(`Invalid input 2`);
+                    rl.setPrompt(getMessage('cli_error'));
+                    rl.prompt();
                 }
             });
         }
