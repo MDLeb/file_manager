@@ -14,10 +14,9 @@ const systemInfo = {
     'cpus': () => {
         return osInf.cpus()
             .map(i => {
-                //FIXME clock_rate GHz / Hz
                 return {
                     model: i.model,
-                    'clock_rate\ \(GHz\)': i.speed,
+                    'clock_rate\ \(GHz\)': (i.speed * 0.001).toFixed(2),
                 }
             })
     },

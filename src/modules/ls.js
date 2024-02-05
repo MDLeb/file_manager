@@ -1,13 +1,16 @@
-import state from "../state.js";
 import fs from "node:fs";
+import state from "../state.js";
 
 export const ls = async () => {
-    fs.readdir(state.SELECTED_DIR, {withFileTypes: true}, (error, files) => {
-        let resFiles = files.map(i => {
-            return {'Name': i.name, 'Type': i.isFile() ? 'file' : 'directory'}
-        }).sort(sortFn)
-        if (error) return error;
-        return resFiles;
+
+    return new Promise((res, rej) => {
+        fs.readdir(state.SELECTED_DIR, {withFileTypes: true}, (err, files) => {
+            let resFiles = files.map(i => {
+                return {'Name': i.name, 'Type': i.isFile() ? 'file' : 'directory'}
+            }).sort(sortFn);
+            if (err) rej(err);
+            res(resFiles);
+        })
     })
 }
 

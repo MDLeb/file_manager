@@ -1,6 +1,6 @@
-import state from "../state.js";
 import fs from "node:fs";
 import path from "node:path";
+import state from "../state.js";
 
 export const cd = async (targetPath) => {
     let resPath = path.resolve(state.SELECTED_DIR, targetPath);

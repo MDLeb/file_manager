@@ -1,8 +1,7 @@
-import state from "../state.js";
 import path from "node:path";
-import {finished} from 'node:stream/promises';
 import {createReadStream} from 'node:fs';
 import {createHash} from 'node:crypto';
+import state from "../state.js";
 
 export const hash = async (fileName) => {
     const filePath = path.resolve(state.SELECTED_DIR, fileName);
@@ -10,12 +9,16 @@ export const hash = async (fileName) => {
     const readable = createReadStream(filePath, {encoding: 'utf-8'});
     let data;
 
-    readable.on('data', (chunk) => {
-        hash.update(chunk);
-    });
-    readable.on('end', () => {
-        data = hash.digest('hex');
-    });
-    await finished(readable);
-    return `Hash for ${fileName} is ${data}`
+    return new Promise((res, rej) => {
+        readable.on('data', (chunk) => {
+            hash.update(chunk);
+        });
+        readable.on('error', (err) => {
+            rej(err)
+        });
+        readable.on('end', () => {
+            data = hash.digest('hex');
+            res(`Hash for ${fileName} is ${data}`)
+        });
+    })
 }
