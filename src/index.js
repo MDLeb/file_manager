@@ -6,7 +6,7 @@ import {getMessage} from "./utils/getMessage.js";
 import {getDirname} from "./utils/getDirname.js";
 import {isString} from "./utils/isString.js";
 import {isArray} from "./utils/isArray.js";
-import {errorHandler} from "./utils/errorHandler.js";
+import {getErrorMessage} from "./utils/getErrorMessage.js";
 
 const startManager = async () => {
     const rl = readline.createInterface({input: stdin, output: stdout});
@@ -34,14 +34,10 @@ const startManager = async () => {
 
                                 rl.setPrompt(getMessage('directory'));
                             } catch (error) {
-                                rl.setPrompt(getMessage('error', errorHandler(error)) + getMessage('directory'));
+                                rl.setPrompt(getMessage('error', getErrorMessage(error)) + getMessage('directory'));
                             }
                             rl.prompt();
                         })
-                    // .catch((error) => {
-                    //     rl.setPrompt(getMessage('error', errorHandler(error)), getMessage('directory'));
-                    //     rl.prompt();
-                    // });
                 } else {
                     rl.setPrompt(getMessage('cli_error'));
                     rl.prompt();

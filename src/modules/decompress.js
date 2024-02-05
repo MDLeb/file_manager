@@ -5,8 +5,9 @@ import path from 'node:path';
 import state from "../state.js";
 
 export const decompress = async (from, to) => {
+    if (!to) throw new Error('Wrong destination path');
     const filePath = path.resolve(state.SELECTED_DIR, from);
-    const destPath = path.resolve(state.SELECTED_DIR, to);
+    const destPath = path.resolve(state.SELECTED_DIR, to, path.parse(filePath).name);
 
     return new Promise((res, rej) => {
         fs.access(filePath, fs.constants.F_OK, (error) => {
@@ -17,6 +18,10 @@ export const decompress = async (from, to) => {
                     if (!stats.isFile()) {
                         //если путь указывает не на файл
                         rej(new Error('invalid path to file'));
+                    }
+                    if (!path.parse(filePath).ext.includes('.br')) {
+                        //если расширение файла не архив br
+                        rej(new Error('file is not archive'));
                     }
 
                     const decompress = createBrotliDecompress();

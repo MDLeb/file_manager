@@ -15,6 +15,10 @@ export const cp = async (fileName, to) => {
         fs.access(fromPath, fs.constants.F_OK, async (error) => {
             if (error) rej(error);
             else {
+                if (!fs.existsSync(toPath)) {
+                    rej(new Error(`wrong directory path`));
+                    return;
+                }
                 const targetPath = path.resolve(toPath, path.parse(fromPath).base);
                 if (fs.existsSync(targetPath)) {
                     rej(new Error(`File ${fileName} already exists in ${toPath}`));

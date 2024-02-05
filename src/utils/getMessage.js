@@ -3,7 +3,7 @@ import {isFunction} from "./isFunction.js";
 
 const msg = {
     'start': () => `Welcome to the File Manager, ${state.USER_NAME}!`,
-    'finish': () =>`Thank you for using File Manager, ${state.USER_NAME}, goodbye!`,
+    'finish': () =>`\nThank you for using File Manager, ${state.USER_NAME}, goodbye!`,
     'directory': () =>`You are currently in ${state.SELECTED_DIR}\n`,
     'error': (errorMes) => `Operation failed: ${errorMes}\n`,
     'cli_error': `Invalid input: command doesn't exist\n`,
