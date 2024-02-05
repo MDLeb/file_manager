@@ -17,17 +17,27 @@ export const mv = async (fileName, to) => {
                         rej(new Error(`${fileName} is not a file`));
                         return;
                     }
-                    const readStream = fs.createReadStream(fromPath, {encoding: 'utf-8'})
-                    const writeStream = fs.createWriteStream(toPath)
 
-                    pipeline(readStream, writeStream);
-                    readStream.on('end', (err) => {
+                    fs.stat(path.resolve(state.SELECTED_DIR, to), (err, stats) => {
                         if (err) rej(err);
-                        fs.rm(fromPath, {recursive: true}, (err) => {
+                        if (!stats.isDirectory()) {
+                            //если 2 путь указывает не на папку
+                            rej(new Error('invalid path to directory'));
+                            return
+                        }
+                        const readStream = fs.createReadStream(fromPath, {encoding: 'utf-8'})
+                        const writeStream = fs.createWriteStream(toPath)
+
+                        pipeline(readStream, writeStream);
+                        readStream.on('end', (err) => {
                             if (err) rej(err);
-                            res(`File ${fileName} was moved to ${toPath}`)
-                        });
+                            fs.rm(fromPath, {recursive: true}, (err) => {
+                                if (err) rej(err);
+                                res(`File ${fileName} was moved to ${toPath}`)
+                            });
+                        })
                     })
+
                 })
             }
         });

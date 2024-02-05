@@ -7,8 +7,8 @@ export const cp = async (fileName, to) => {
     const fromPath = path.resolve(state.SELECTED_DIR, fileName);
     let toPath = path.resolve(state.SELECTED_DIR, to);
 
-    return new Promise( (res, rej) => {
-        if(path.parse(fromPath).dir === toPath){
+    return new Promise((res, rej) => {
+        if (path.parse(fromPath).dir === toPath) {
             rej(new Error(`File ${fileName} already exists in ${toPath}`));
             return;
         }
@@ -30,14 +30,23 @@ export const cp = async (fileName, to) => {
                         rej(new Error(`${fileName} is not a file`));
                         return;
                     }
-                    const readStream = fs.createReadStream(fromPath, {encoding: 'utf-8'})
-                    const writeStream = fs.createWriteStream(targetPath)
-
-                    pipeline(readStream, writeStream);
-                    readStream.on('end', (err) => {
+                    fs.stat(toPath, (err, stats) => {
                         if (err) rej(err);
-                        res(`File ${fileName} was copied to ${toPath}`)
-                    })
+                        if (!stats.isDirectory()) {
+                            //если 2 путь указывает не на папку
+                            rej(new Error('invalid path to directory'));
+                            return
+                        }
+                        const readStream = fs.createReadStream(fromPath, {encoding: 'utf-8'})
+                        const writeStream = fs.createWriteStream(targetPath)
+
+                        pipeline(readStream, writeStream);
+                        readStream.on('end', (err) => {
+                            if (err) rej(err);
+                            res(`File ${fileName} was copied to ${toPath}`)
+                        })
+                    });
+
                 })
             }
         });
